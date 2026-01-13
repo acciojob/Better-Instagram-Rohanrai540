@@ -1,48 +1,35 @@
 //your code here
-const images = document.querySelectorAll(".image");
+let draggedImg = null;
 
-// Assign ids required by CSS
-images.forEach((div, index) => {
-  div.id = `div${index + 1}`;
+const drags = document.querySelectorAll(".drag");
+
+drags.forEach(drag => {
+
+  drag.addEventListener("mousedown", () => {
+    draggedImg = drag.querySelector("img");
+  });
+
+  drag.addEventListener("mouseup", () => {
+    draggedImg = null;
+  });
+
+  drag.addEventListener("mousemove", () => {
+    // Needed only for Cypress mouse simulation
+  });
 });
 
-let draggedElement = null;
+// swap images on drop
+drags.forEach(drag => {
+  drag.addEventListener("mouseup", () => {
+    if (!draggedImg) return;
 
-images.forEach(div => {
-  div.addEventListener("dragstart", dragStart);
-  div.addEventListener("dragover", dragOver);
-  div.addEventListener("drop", drop);
-  div.addEventListener("dragend", dragEnd);
+    const targetImg = drag.querySelector("img");
+    if (targetImg === draggedImg) return;
+
+    const temp = draggedImg.src;
+    draggedImg.src = targetImg.src;
+    targetImg.src = temp;
+  });
 });
 
-function dragStart(e) {
-  draggedElement = this;
-
-  // REQUIRED for drop to work
-  e.dataTransfer.setData("text/plain", "");
-
-  this.classList.add("selected");
-}
-
-function dragOver(e) {
-  e.preventDefault(); // MUST be here
-}
-
-function drop(e) {
-  e.preventDefault();
-
-  if (!draggedElement || draggedElement === this) return;
-
-  // Swap background images
-  const draggedBg = draggedElement.style.backgroundImage;
-  const targetBg = this.style.backgroundImage;
-
-  draggedElement.style.backgroundImage = targetBg;
-  this.style.backgroundImage = draggedBg;
-}
-
-function dragEnd() {
-  this.classList.remove("selected");
-  draggedElement = null;
-}
 
