@@ -1,14 +1,13 @@
 //your code here
 const images = document.querySelectorAll(".image");
 
-// assign ids div1 to div6 (required by CSS)
+// Assign ids required by CSS
 images.forEach((div, index) => {
   div.id = `div${index + 1}`;
 });
 
 let draggedElement = null;
 
-// add drag events
 images.forEach(div => {
   div.addEventListener("dragstart", dragStart);
   div.addEventListener("dragover", dragOver);
@@ -18,26 +17,32 @@ images.forEach(div => {
 
 function dragStart(e) {
   draggedElement = this;
+
+  // REQUIRED for drop to work
+  e.dataTransfer.setData("text/plain", "");
+
   this.classList.add("selected");
 }
 
 function dragOver(e) {
-  e.preventDefault(); // allow drop
+  e.preventDefault(); // MUST be here
 }
 
 function drop(e) {
   e.preventDefault();
 
-  if (draggedElement === this) return;
+  if (!draggedElement || draggedElement === this) return;
 
-  // swap background images
-  const bg1 = draggedElement.style.backgroundImage;
-  const bg2 = this.style.backgroundImage;
+  // Swap background images
+  const draggedBg = draggedElement.style.backgroundImage;
+  const targetBg = this.style.backgroundImage;
 
-  draggedElement.style.backgroundImage = bg2;
-  this.style.backgroundImage = bg1;
+  draggedElement.style.backgroundImage = targetBg;
+  this.style.backgroundImage = draggedBg;
 }
 
 function dragEnd() {
   this.classList.remove("selected");
+  draggedElement = null;
 }
+
